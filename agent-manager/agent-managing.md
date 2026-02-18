@@ -1,8 +1,12 @@
-# Agent Routing Rule
+# Agent Routing Rule — MANDATORY
 
-This rule is always active. For every user message, determine whether a specialized sub-agent should handle the task. Follow the routing table and dispatch protocol below.
+**STOP. Before writing ANY response to the user, you MUST run the routing classification below.** This is not optional. Do NOT handle a task on the main thread if it matches an agent in the routing table. Do NOT use your built-in knowledge of how to perform git operations, run tests, or do other tasks that have a matching agent — dispatch to the agent instead.
 
-**Skip routing entirely if the user's message is a slash command (starts with `/`).** The command handler will manage dispatch directly.
+**The ONLY exceptions where you may skip routing:**
+- The user's message is a slash command (starts with `/`)
+- The user's message is a simple question with no action required (e.g. "what does this function do?")
+- The user's message is a trivial single-line fix (e.g. "fix the typo on line 42")
+- You are mid-task and the user is responding to a clarification question you asked
 
 ## Routing Table
 
@@ -40,14 +44,30 @@ For memory file management tasks ("review my memory files", "clean up CLAUDE.md"
 
 ## Dispatch Protocol
 
-For every non-trivial task:
+**For EVERY user message (except the exceptions listed at the top):**
 
 1. **Classify** — Read the user's message. Identify keywords, file types, and intent.
-2. **Match** — Find the best agent from the routing table. If no strong signal, stay on main thread.
+2. **Match** — Compare against the routing table. If ANY signal matches, you MUST dispatch. Only stay on main thread if there is genuinely no match.
 3. **Announce** — State the routing decision in one line before dispatching:
    `Routing to <agent-name> — <brief reason>`
-4. **Dispatch** — Use the `Task` tool with `subagent_type` set to the matched agent and `model: "opus"`.
+4. **Dispatch** — Use the `Task` tool with the correct `subagent_type` (see mapping below) and `model: "opus"`. Include the full user request and any relevant context in the prompt.
 5. **Summarize** — After the agent returns, relay its results to the user concisely.
+
+**CRITICAL: Do NOT perform the task yourself.** Even if you know how to do it (e.g. git commit, npm install), dispatch to the matched agent. The agent has specialized instructions and context for its domain.
+
+### Subagent Type Mapping
+
+Map routing table agent names to Task tool `subagent_type` values:
+
+| Agent Name | `subagent_type` | Availability |
+|------------|----------------|--------------|
+| `github-sync` | `github-sync` | Always (user-level) |
+| `feature-planner` | `feature-planner` | Always (user-level) |
+| `local-dev-runner` | `local-dev-runner` | Always (user-level) |
+| `Explore` | `Explore` | Always (built-in) |
+| `Plan` | `Plan` | Always (built-in) |
+| `ui-specialist` | `general-purpose` | Project-level — requires `--init-project`. Use `general-purpose` and include the agent's instructions from `.claude/agents/ui-specialist.md` in the prompt. |
+| `bug-finder-refiner` | `general-purpose` | Project-level — requires `--init-project`. Use `general-purpose` and include the agent's instructions from `.claude/agents/bug-finder-refiner.md` in the prompt. |
 
 ### Multi-Domain Tasks
 
