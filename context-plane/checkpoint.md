@@ -4,7 +4,7 @@ Extract and persist key context from the current session. Primary target is `ses
 
 ## Step 0: Load state
 
-1. Read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, start with `{ "version": 2, "files": {} }`.
+1. Read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, start with `{ "version": 2, "files": {} }`.
 2. Resolve the auto memory directory: `~/.claude/projects/<project-key>/memory/`.
 3. Read `session-context.md` in that directory (if it exists) — this is the primary checkpoint target.
 4. Read `MEMORY.md` in that directory (if it exists) and note its current line count.
@@ -134,13 +134,13 @@ If promotable items remain, present them:
 If the estimated MEMORY.md line count after promotions would exceed 150 lines, add:
 ```
 MEMORY.md will be at M/200 lines after promotions.
-Consider running /context-gardner overflow to move detailed sections to topic files.
+Consider running /context-plane overflow to move detailed sections to topic files.
 ```
 
 If it would exceed 200 lines, add:
 ```
 MEMORY.md will exceed the 200-line system prompt limit.
-Running /context-gardner overflow after this checkpoint is strongly recommended.
+Running /context-plane overflow after this checkpoint is strongly recommended.
 ```
 
 Then ask: **"Apply these promotions?"**
@@ -172,26 +172,26 @@ Promotions applied:
 
 ## Step 6: Update state
 
-1. Read `.claude/context-gardner-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
+1. Read `.claude/context-plane-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For each file that was modified during this run:
    - Compute the SHA-256 hash of the file content.
    - If the path is not in `files`, add it with `created_at` and `updated_at` both set to the current timestamp, `updated_by` set to `"checkpoint"`, and `content_hash` set to `"sha256:<hash>"`.
    - If the path already exists, update `updated_at`, `updated_by`, and `content_hash`.
-5. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-6. Write the updated JSON to `.claude/context-gardner-state.json`.
+5. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+6. Write the updated JSON to `.claude/context-plane-state.json`.
 
 ## Step 7: Overflow check
 
 After writing, if MEMORY.md was modified, count its lines. If it exceeds 150 lines, suggest:
 ```
-MEMORY.md is at N/200 lines. Run /context-gardner overflow to move detailed sections to topic files.
+MEMORY.md is at N/200 lines. Run /context-plane overflow to move detailed sections to topic files.
 ```
 
 ## Audit log
 
-After applying changes, append one entry per action to `~/.claude/projects/<project-key>/context-gardner-audit.log` (JSONL format):
+After applying changes, append one entry per action to `~/.claude/projects/<project-key>/context-plane-audit.log` (JSONL format):
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"checkpoint","action":"rewrite","file":"session-context.md","reason":"Session context checkpoint","lines_after":<N>}
 {"timestamp":"<ISO 8601 UTC>","command":"checkpoint","action":"promote","file":"<target path>","section":"<heading or description>","reason":"Promoted from session context","lines_added":<N>}

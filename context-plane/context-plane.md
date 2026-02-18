@@ -1,4 +1,4 @@
-Dispatch to a ContextGardner subcommand based on the first word of the arguments.
+Dispatch to a ContextPlane subcommand based on the first word of the arguments.
 
 ## Subcommand table
 
@@ -17,7 +17,7 @@ Dispatch to a ContextGardner subcommand based on the first word of the arguments
 
 ## State tracking
 
-Before dispatching, read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, note that this is a first run — the subcommand will handle it.
+Before dispatching, read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, note that this is a first run — the subcommand will handle it.
 
 Check whether `--all` or the bare word `all` appears as a token anywhere in `$ARGUMENTS` (distinct from the subcommand or scope keywords). If found, strip it from the arguments and pass `--all` as the first token of the remaining arguments sent to the subcommand.
 
@@ -29,12 +29,12 @@ Check whether `--all` or the bare word `all` appears as a token anywhere in `$AR
 
 3. Route the subcommand:
 
-   **If `version` or `-v`:** Read the `VERSION` file from the ContextGardner install directory (look for it alongside the command files — try `.claude/commands/../VERSION`, or the project root `VERSION` file). Print:
+   **If `version` or `-v`:** Read the `VERSION` file from the ContextPlane install directory (look for it alongside the command files — try `.claude/commands/../VERSION`, or the project root `VERSION` file). Print:
    ```
-   ContextGardner v<version>
+   ContextPlane v<version>
    ```
 
-   **If `log`:** Read the audit log file at `~/.claude/projects/<project-key>/context-gardner-audit.log`. If it does not exist, print "No audit log found. Actions are logged after review, prune, move, checkpoint, overflow, and restore operations." and stop. Otherwise:
+   **If `log`:** Read the audit log file at `~/.claude/projects/<project-key>/context-plane-audit.log`. If it does not exist, print "No audit log found. Actions are logged after review, prune, move, checkpoint, overflow, and restore operations." and stop. Otherwise:
    - If remaining arguments contain a number N, show the last N entries.
    - If remaining arguments contain `--file <path>`, filter entries where `file` matches.
    - If remaining arguments contain `--command <cmd>`, filter entries where `command` matches.
@@ -43,9 +43,9 @@ Check whether `--all` or the bare word `all` appears as a token anywhere in `$AR
 
    **If `help` or no arguments provided:** Print the following usage summary and stop:
    ```
-   ContextGardner — slash commands for managing Claude Code memory files.
+   ContextPlane — slash commands for managing Claude Code memory files.
 
-   Usage: /context-gardner <command> [--all] [arguments]
+   Usage: /context-plane <command> [--all] [arguments]
 
    Commands:
      review-memory (review)  Autonomous review with proposal + approval
@@ -69,14 +69,14 @@ Check whether `--all` or the bare word `all` appears as a token anywhere in `$AR
    **If unrecognized:** Print:
    ```
    Unknown subcommand: "<word>"
-   Run /context-gardner help for available commands.
+   Run /context-plane help for available commands.
    ```
 
-4. After the subcommand finishes, update `.claude/context-gardner-state.json`:
+4. After the subcommand finishes, update `.claude/context-plane-state.json`:
    - Read the existing state file first (preserve all existing keys).
    - Set `version` to `2`.
    - Set `last_invoked` to the current ISO 8601 UTC timestamp.
-   - Do NOT modify `agent_router_tracking` or any other existing keys — only update `version` and `last_invoked`.
+   - Do NOT modify `agent_manager_tracking` or any other existing keys — only update `version` and `last_invoked`.
    - Write the file (create `.claude/` directory if needed).
    This ensures `last_invoked` is updated even if the subcommand made no changes.
 

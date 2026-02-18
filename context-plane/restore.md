@@ -88,19 +88,19 @@ On approval:
 
 ## Step 4: Update state
 
-1. Read `.claude/context-gardner-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
+1. Read `.claude/context-plane-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For each restored file:
    - Compute the SHA-256 hash of the restored content.
    - Update `updated_at` to now, `updated_by` to `"restore"`, and `content_hash` to the new hash.
    - If the path is not in `files`, add it with `created_at` set to now.
-5. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-6. Write the updated JSON to `.claude/context-gardner-state.json`.
+5. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+6. Write the updated JSON to `.claude/context-plane-state.json`.
 
 ## Audit log
 
-After restoring, append one entry per restored file to `~/.claude/projects/<project-key>/context-gardner-audit.log` (JSONL format):
+After restoring, append one entry per restored file to `~/.claude/projects/<project-key>/context-plane-audit.log` (JSONL format):
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"restore","action":"restore","file":"<path>","snapshot":"<snapshot-folder-name>","reason":"Restored from snapshot"}
 ```

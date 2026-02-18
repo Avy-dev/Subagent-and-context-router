@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Install agent-router skill: routing rules, command, and agent definitions.
+# install.sh — Install agent-manager skill: routing rules, command, and agent definitions.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -9,8 +9,8 @@ AGENTS_DIR="$HOME/.claude/agents"
 
 # --- Uninstall mode ---
 if [ "${1:-}" = "--uninstall" ]; then
-    rm -f "$RULES_DIR/agent-routing.md"
-    rm -f "$COMMANDS_DIR/agent-router.md"
+    rm -f "$RULES_DIR/agent-managing.md"
+    rm -f "$COMMANDS_DIR/agent-manager.md"
     # Only remove agent symlinks that point back to our skill
     if [ -d "$AGENTS_DIR" ]; then
         for f in "$AGENTS_DIR"/*.md; do
@@ -21,7 +21,7 @@ if [ "${1:-}" = "--uninstall" ]; then
             fi
         done
     fi
-    echo "Agent Router v$(cat "$SCRIPT_DIR/VERSION") uninstalled."
+    echo "AgentManager v$(cat "$SCRIPT_DIR/VERSION") uninstalled."
     exit 0
 fi
 
@@ -47,7 +47,7 @@ if [ "${1:-}" = "--init-project" ]; then
 fi
 
 # --- Verify source files exist ---
-for f in "$SCRIPT_DIR/agent-routing.md" "$SCRIPT_DIR/agent-router.md" "$SCRIPT_DIR/VERSION"; do
+for f in "$SCRIPT_DIR/agent-managing.md" "$SCRIPT_DIR/agent-manager.md" "$SCRIPT_DIR/VERSION"; do
     [ -f "$f" ] || { echo "Error: $(basename "$f") not found in $SCRIPT_DIR"; exit 1; }
 done
 
@@ -57,7 +57,7 @@ mkdir -p "$COMMANDS_DIR"
 mkdir -p "$AGENTS_DIR"
 
 # --- Backup existing regular files (not symlinks) before overwriting ---
-for f in "$RULES_DIR/agent-routing.md" "$COMMANDS_DIR/agent-router.md"; do
+for f in "$RULES_DIR/agent-managing.md" "$COMMANDS_DIR/agent-manager.md"; do
     if [ -e "$f" ] && [ ! -L "$f" ]; then
         echo "Warning: $f exists as a regular file. Backing up to ${f}.bak"
         cp "$f" "${f}.bak"
@@ -65,12 +65,12 @@ for f in "$RULES_DIR/agent-routing.md" "$COMMANDS_DIR/agent-router.md"; do
 done
 
 # --- Symlink always-on routing rule ---
-ln -sf "$SCRIPT_DIR/agent-routing.md" "$RULES_DIR/agent-routing.md"
-echo "Linked: $RULES_DIR/agent-routing.md"
+ln -sf "$SCRIPT_DIR/agent-managing.md" "$RULES_DIR/agent-managing.md"
+echo "Linked: $RULES_DIR/agent-managing.md"
 
 # --- Symlink manual command ---
-ln -sf "$SCRIPT_DIR/agent-router.md" "$COMMANDS_DIR/agent-router.md"
-echo "Linked: $COMMANDS_DIR/agent-router.md"
+ln -sf "$SCRIPT_DIR/agent-manager.md" "$COMMANDS_DIR/agent-manager.md"
+echo "Linked: $COMMANDS_DIR/agent-manager.md"
 
 # --- Install user-level agent definitions ---
 echo ""
@@ -94,9 +94,9 @@ done
 
 # --- Summary ---
 echo ""
-echo "Agent Router v$(cat "$SCRIPT_DIR/VERSION") installed successfully."
-echo "  Rule:    ~/.claude/rules/agent-routing.md    (always-on)"
-echo "  Command: ~/.claude/commands/agent-router.md  (/agent-router)"
+echo "AgentManager v$(cat "$SCRIPT_DIR/VERSION") installed successfully."
+echo "  Rule:    ~/.claude/rules/agent-managing.md    (always-on)"
+echo "  Command: ~/.claude/commands/agent-manager.md  (/agent-manager)"
 echo "  Agents:  $AGENT_COUNT user-level agent(s) in ~/.claude/agents/"
 
 # --- Mention project templates ---

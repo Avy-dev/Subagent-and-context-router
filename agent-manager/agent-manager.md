@@ -17,9 +17,9 @@ Manual agent routing command. Parse the first word of `$ARGUMENTS` as a subcomma
 
    **If `help` or no arguments provided:** Print the following and stop:
    ```
-   Agent Router — automatic and manual sub-agent dispatch. (Run /agent-router version for current version.)
+   AgentManager — automatic and manual sub-agent dispatch. (Run /agent-manager version for current version.)
 
-   Usage: /agent-router <command> [arguments]
+   Usage: /agent-manager <command> [arguments]
 
    Commands:
      help                          Show this message
@@ -36,23 +36,23 @@ Manual agent routing command. Parse the first word of `$ARGUMENTS` as a subcomma
      plan <task>                   Route to architecture planner agent
 
    Examples:
-     /agent-router status
-     /agent-router ui-specialist fix the header alignment on mobile
-     /agent-router local-dev-runner run pytest with verbose output
-     /agent-router bug-finder-refiner audit the auth module
+     /agent-manager status
+     /agent-manager ui-specialist fix the header alignment on mobile
+     /agent-manager local-dev-runner run pytest with verbose output
+     /agent-manager bug-finder-refiner audit the auth module
    ```
 
    **If `version`:** Read the `VERSION` file from the same directory as this command file. Print:
    ```
-   Agent Router v<version>
+   AgentManager v<version>
    ```
 
-   **If `status`:** Read `~/.claude/projects/<current-project-key>/context-gardner-state.json` (the same path Claude Code uses for project-scoped `.claude/` files). Display using this format:
+   **If `status`:** Read `~/.claude/projects/<current-project-key>/context-plane-state.json` (the same path Claude Code uses for project-scoped `.claude/` files). Display using this format:
    ```
-   Agent Router Status
+   AgentManager Status
    -------------------
-   Last context-gardner review: <last_run or "never">
-   Last context-gardner invocation: <last_invoked or "never">
+   Last context-plane review: <last_run or "never">
+   Last context-plane invocation: <last_invoked or "never">
    Tracked modifications: <count>
 
    Recent (last 5):
@@ -60,26 +60,26 @@ Manual agent routing command. Parse the first word of `$ARGUMENTS` as a subcomma
      [<timestamp>] <agent> — <file1>
      ...
    ```
-   If no `agent_router_tracking` data exists, print: "No agent-router modifications tracked yet."
+   If no `agent_manager_tracking` data exists, print: "No agent-manager modifications tracked yet."
 
    **If a recognized agent name** — match case-insensitively against: `ui-specialist`, `bug-finder-refiner`, `local-dev-runner`, `github-sync`, `feature-planner`, `explore` (subagent_type: `Explore`), `plan` (subagent_type: `Plan`):
    - The remaining arguments after the agent name become the task description.
-   - If no task description provided, print: `Error: No task specified. Usage: /agent-router <agent-name> <task>`
+   - If no task description provided, print: `Error: No task specified. Usage: /agent-manager <agent-name> <task>`
    - Otherwise, announce: `Force-routing to <agent-name> — <task summary>`
    - Dispatch using the `Task` tool with `subagent_type` set to the canonical agent name (use `Explore` and `Plan` with capital letters for those two) and `model: "opus"`.
    - After completion, follow the post-change tracking protocol:
      1. Discover modified files using `git diff --name-only` and `git ls-files --others --exclude-standard`. If both are empty, fall back to `git diff --name-only HEAD~1` to catch committed changes. If not in a git repo, rely on the agent's output.
      2. If `files_modified` is empty, skip tracking.
-     3. Read `~/.claude/projects/<current-project-key>/context-gardner-state.json`.
-     4. If `agent_router_tracking` does not exist, create it: `{ "modifications": [] }`.
-     5. Append the tracking entry to `agent_router_tracking.modifications[]`.
+     3. Read `~/.claude/projects/<current-project-key>/context-plane-state.json`.
+     4. If `agent_manager_tracking` does not exist, create it: `{ "modifications": [] }`.
+     5. Append the tracking entry to `agent_manager_tracking.modifications[]`.
      6. Write the updated state back.
    - Relay the agent's results to the user.
 
    **If unrecognized:** Print:
    ```
    Unknown agent or command: "<word>"
-   Run /agent-router help for available commands.
+   Run /agent-manager help for available commands.
    ```
 
 ## Rules

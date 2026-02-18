@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Install context-gardner skill: memory management commands and session-resume rule.
+# install.sh — Install context-plane skill: memory management commands and session-resume rule.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -8,7 +8,7 @@ COMMANDS_DIR="$HOME/.claude/commands"
 
 # List of command files (everything except session-resume.md, VERSION, and install.sh)
 COMMAND_FILES=(
-    context-gardner.md
+    context-plane.md
     checkpoint.md
     review-memory.md
     prune-memory.md
@@ -30,7 +30,7 @@ if [ "${1:-}" = "--uninstall" ]; then
             echo "Skipped: $COMMANDS_DIR/$cmd (symlink points elsewhere)"
         fi
     done
-    echo "ContextGardner v$(cat "$SCRIPT_DIR/VERSION") uninstalled."
+    echo "ContextPlane v$(cat "$SCRIPT_DIR/VERSION") uninstalled."
     exit 0
 fi
 
@@ -74,15 +74,15 @@ done
 
 # --- Summary ---
 echo ""
-echo "ContextGardner v$(cat "$SCRIPT_DIR/VERSION") installed successfully."
+echo "ContextPlane v$(cat "$SCRIPT_DIR/VERSION") installed successfully."
 echo "  Rule:     ~/.claude/rules/session-resume.md     (always-on)"
 echo "  Commands: $CMD_COUNT command(s) in ~/.claude/commands/"
 echo ""
 echo "Available commands:"
-echo "  /context-gardner review    — Autonomous review with proposal + approval"
-echo "  /context-gardner prune     — Automated pruning with approval"
-echo "  /context-gardner move      — Move sections between memory files"
-echo "  /context-gardner checkpoint — Capture session context"
-echo "  /context-gardner overflow  — Move detailed MEMORY.md sections to topic files"
-echo "  /context-gardner restore   — List and restore pre-modification snapshots"
-echo "  /context-gardner pin       — Pin entries to protect from pruning"
+echo "  /context-plane review    — Autonomous review with proposal + approval"
+echo "  /context-plane prune     — Automated pruning with approval"
+echo "  /context-plane move      — Move sections between memory files"
+echo "  /context-plane checkpoint — Capture session context"
+echo "  /context-plane overflow  — Move detailed MEMORY.md sections to topic files"
+echo "  /context-plane restore   — List and restore pre-modification snapshots"
+echo "  /context-plane pin       — Pin entries to protect from pruning"

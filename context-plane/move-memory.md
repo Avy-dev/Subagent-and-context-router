@@ -3,7 +3,7 @@ Move a section of memory from one memory file to another. Typically used to push
 ## Step 0: Load state
 
 1. Check whether `--all` or the bare word `all` appears anywhere in `$ARGUMENTS`. If found, strip it from the arguments and set the **all-files** flag.
-2. Read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
+2. Read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
 3. If the state file has no `version` field or `version` is 1, treat it as needing migration — hashes will be computed during the state update step.
 4. Extract `last_invoked` from the state file.
 5. When building the memory map (if needed), detect changes using content-hash + mtime:
@@ -156,7 +156,7 @@ Ask: "Apply this move?"
 
 ### Audit log
 
-After applying, append one JSONL entry per moved section to `~/.claude/projects/<project-key>/context-gardner-audit.log`:
+After applying, append one JSONL entry per moved section to `~/.claude/projects/<project-key>/context-plane-audit.log`:
 
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"move-memory","action":"move","file":"<source path>","section":"<heading>","destination":"<dest path>","source_action":"<remove|reference|keep>","reason":"User-initiated move","lines_moved":<N>}
@@ -173,7 +173,7 @@ If the log exceeds 500 lines, trim the oldest entries to bring it back to 500.
 - Preserve any pin markers on the section being moved — if it was pinned in the source, it stays pinned in the destination.
 - If multiple sections are selected, process them as a single batch move (all go to the same destination, previewed together).
 - Always create a snapshot before applying changes (Step 5.5).
-- After applying the move, update `.claude/context-gardner-state.json`:
+- After applying the move, update `.claude/context-plane-state.json`:
   - Set `version` to `2`.
   - Set `last_invoked` to the current ISO 8601 UTC timestamp.
   - For each modified file:
@@ -182,7 +182,7 @@ If the log exceeds 500 lines, trim the oldest entries to bring it back to 500.
     - Add `created_at` for new entries.
   - For section-level tracking: remove moved sections from source file's `sections` map. Add them to destination file's `sections` map with `last_verified` set to now and `review_count` set to `0`.
   - Remove entries for files that no longer exist on disk.
-  - Do NOT modify `agent_router_tracking`.
-- Never show `.claude/context-gardner-state.json` or `context-gardner-audit.log` as a memory file.
+  - Do NOT modify `agent_manager_tracking`.
+- Never show `.claude/context-plane-state.json` or `context-plane-audit.log` as a memory file.
 
 $ARGUMENTS

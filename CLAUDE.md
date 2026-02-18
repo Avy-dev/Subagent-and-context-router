@@ -9,34 +9,34 @@ This repository contains custom skills for Claude Code. Skills extend Claude Cod
 ## Installation Commands
 
 ```bash
-# Install agent-router skill (rule, command, and user-level agents)
-bash agent-router/install.sh
+# Install agent-manager skill (rule, command, and user-level agents)
+bash agent-manager/install.sh
 
 # Copy project-level agent templates to current project
-bash agent-router/install.sh --init-project
+bash agent-manager/install.sh --init-project
 
-# Uninstall agent-router
-bash agent-router/install.sh --uninstall
+# Uninstall agent-manager
+bash agent-manager/install.sh --uninstall
 
-# Install context-gardner skill (session-resume rule and all commands)
-bash context-gardner/install.sh
+# Install context-plane skill (session-resume rule and all commands)
+bash context-plane/install.sh
 
-# Uninstall context-gardner
-bash context-gardner/install.sh --uninstall
+# Uninstall context-plane
+bash context-plane/install.sh --uninstall
 ```
 
 ## Architecture
 
-### Agent Router Skill (v2.0.1)
+### AgentManager Skill (v2.0.1)
 
-The primary skill — provides automatic and manual routing to specialized sub-agents.
+Automatic task dispatch to specialized sub-agents. Every user message is classified by intent and routed to the best agent — UI work goes to the UI specialist, git operations go to github-sync, code audits go to the bug finder, and so on. No manual intervention needed.
 
 **Components:**
 
 | File | Installed To | Purpose |
 |------|--------------|---------|
-| `agent-routing.md` | `~/.claude/rules/` | Always-on rule that routes tasks to appropriate agents |
-| `agent-router.md` | `~/.claude/commands/` | Manual `/agent-router` command for force-dispatch |
+| `agent-managing.md` | `~/.claude/rules/` | Always-on rule that routes tasks to appropriate agents |
+| `agent-manager.md` | `~/.claude/commands/` | Manual `/agent-manager` command for force-dispatch |
 | `agents/user/*.md` | `~/.claude/agents/` | User-level agent definitions (symlinked) |
 | `agents/project-templates/*.md` | `.claude/agents/` | Project-level agents (copied on init) |
 
@@ -59,18 +59,18 @@ The primary skill — provides automatic and manual routing to specialized sub-a
 
 **State Tracking:**
 
-Modifications are tracked in `~/.claude/projects/<project-key>/context-gardner-state.json` under the `agent_router_tracking` key. After 10+ modifications, suggests running `/context-gardner review`.
+Modifications are tracked in `~/.claude/projects/<project-key>/context-plane-state.json` under the `agent_manager_tracking` key. After 10+ modifications, suggests running `/context-plane review`.
 
-### Context Gardner Skill (v1.0.0)
+### ContextPlane Skill (v1.0.0)
 
-Memory file management and session persistence.
+Autonomous memory lifecycle management and session persistence for Claude Code. Keeps CLAUDE.md, MEMORY.md, and session context clean, organized, and within size limits — automatically.
 
 **Components:**
 
 | File | Installed To | Purpose |
 |------|--------------|---------|
 | `session-resume.md` | `~/.claude/rules/` | Always-on rule for autonomous working memory |
-| `context-gardner.md` | `~/.claude/commands/` | Dispatcher for all `/context-gardner` subcommands |
+| `context-plane.md` | `~/.claude/commands/` | Dispatcher for all `/context-plane` subcommands |
 | `checkpoint.md` | `~/.claude/commands/` | Capture and persist session context |
 | `review-memory.md` | `~/.claude/commands/` | Autonomous review with proposal + approval |
 | `prune-memory.md` | `~/.claude/commands/` | Automated pruning with approval |

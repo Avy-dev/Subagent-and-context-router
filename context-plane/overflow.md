@@ -4,7 +4,7 @@ Manage MEMORY.md line count by moving detailed sections to topic files, keeping 
 
 ## Step 0: Load state
 
-1. Read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, start with `{ "version": 2, "files": {} }`.
+1. Read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, start with `{ "version": 2, "files": {} }`.
 2. Resolve the auto memory directory: `~/.claude/projects/<project-key>/memory/`.
 3. Read `MEMORY.md` and count its lines.
 4. Read all existing topic files in the memory directory (any `.md` file that is not `MEMORY.md` and not `session-context.md`). Exclude anything inside `.snapshots/` directories. (`session-context.md` is managed by the session-resume rule and checkpoint command, not by overflow.)
@@ -84,7 +84,7 @@ Continue selecting sections until the projected MEMORY.md line count is ≤150 l
 If MEMORY.md will still be over 150 after all proposed moves, warn:
 ```
 ⚠ Cannot bring MEMORY.md under 150 lines with section-level moves alone.
-Consider running /context-gardner prune to remove stale entries first.
+Consider running /context-plane prune to remove stale entries first.
 ```
 
 Then ask: **"Apply these overflow moves?"**
@@ -116,19 +116,19 @@ Overflow applied:
 
 ## Step 6: Update state
 
-1. Read `.claude/context-gardner-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
+1. Read `.claude/context-plane-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For each file that was modified or created during this run:
    - Compute the SHA-256 hash of the file content.
    - If the path is not in `files`, add it with `created_at` and `updated_at` both set to the current timestamp, `updated_by` set to `"overflow"`, and `content_hash` set to `"sha256:<hash>"`.
    - If the path already exists, update `updated_at`, `updated_by`, and `content_hash`.
-5. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-6. Write the updated JSON to `.claude/context-gardner-state.json`.
+5. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+6. Write the updated JSON to `.claude/context-plane-state.json`.
 
 ## Audit log
 
-After applying changes, append one entry per moved section to `~/.claude/projects/<project-key>/context-gardner-audit.log` (JSONL format):
+After applying changes, append one entry per moved section to `~/.claude/projects/<project-key>/context-plane-audit.log` (JSONL format):
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"overflow","action":"move","file":"MEMORY.md","section":"<heading>","destination":"<topic-file>","reason":"Overflow: <N> lines moved to topic file","lines_removed":<N>,"lines_added_ref":1}
 ```

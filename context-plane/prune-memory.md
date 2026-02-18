@@ -3,7 +3,7 @@ Review the CLAUDE.md and auto memory files (~/.claude/projects/.../memory/) in t
 ## 0. Load state and filter
 
 1. Check whether `--all` or the bare word `all` appears anywhere in `$ARGUMENTS`. If found, strip it from the arguments and set the **all-files** flag.
-2. Read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
+2. Read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
 3. If the state file has no `version` field or `version` is 1, treat it as needing migration — all files will be treated as changed for this run, and hashes will be computed during the state update step.
 4. Extract `last_invoked` from the state file.
 5. For each memory file discovered, detect whether it has genuinely changed:
@@ -20,7 +20,7 @@ Review the CLAUDE.md and auto memory files (~/.claude/projects/.../memory/) in t
 
 ### Agent-router cross-reference
 
-Read `agent_router_tracking.modifications[]` from the state file (if it exists). For each modification entry, check if any `files_modified` overlap with files in the current project that are referenced by memory files in scope. If overlap is found, annotate the memory file when listing it — these files are more likely to contain stale context since the codebase has diverged.
+Read `agent_manager_tracking.modifications[]` from the state file (if it exists). For each modification entry, check if any `files_modified` overlap with files in the current project that are referenced by memory files in scope. If overlap is found, annotate the memory file when listing it — these files are more likely to contain stale context since the codebase has diverged.
 
 ## 1. Analyze all memory files
 
@@ -39,7 +39,7 @@ For each section, check the state file for staleness metadata under `files.<path
 - If `review_count >= 5` without a content change, annotate the section as `[stale?]` — it has been kept through 5+ reviews without changes, suggesting it may no longer be actively relevant.
 - If `last_verified` is more than 30 days old, annotate as `[unverified >30d]` — it hasn't been verified in over a month.
 - These annotations bias toward `Stale` categorization but do not auto-prune. You still make the final call.
-- If agents recently modified source files described by a section (from agent-router tracking), apply extra scrutiny — the section may be outdated.
+- If agents recently modified source files described by a section (from agent-manager tracking), apply extra scrutiny — the section may be outdated.
 
 ## 2. Propose changes
 
@@ -93,16 +93,16 @@ Once approved, first create the snapshot (Step 3.5), then rewrite each affected 
 After applying changes, if MEMORY.md exists, count its lines:
 - If over 150 lines:
   ```
-  MEMORY.md is at N/200 lines. Consider running /context-gardner overflow to move detailed sections to topic files.
+  MEMORY.md is at N/200 lines. Consider running /context-plane overflow to move detailed sections to topic files.
   ```
 - If over 200 lines:
   ```
-  Warning: MEMORY.md exceeds the 200-line system prompt limit. Lines after 200 are silently truncated. Run /context-gardner overflow to fix this.
+  Warning: MEMORY.md exceeds the 200-line system prompt limit. Lines after 200 are silently truncated. Run /context-plane overflow to fix this.
   ```
 
 ### Audit log
 
-After applying changes, append one JSONL entry per action to `~/.claude/projects/<project-key>/context-gardner-audit.log`:
+After applying changes, append one JSONL entry per action to `~/.claude/projects/<project-key>/context-plane-audit.log`:
 
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"prune-memory","action":"remove","file":"<path>","section":"<heading or description>","reason":"<reason>","lines_removed":<N>}
@@ -118,7 +118,7 @@ If the log exceeds 500 lines, trim the oldest entries to bring it back to 500.
 
 After applying approved changes:
 
-1. Read `.claude/context-gardner-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
+1. Read `.claude/context-plane-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For each file that was reviewed during this run (whether modified or not):
@@ -136,7 +136,7 @@ After applying approved changes:
      - If the section was removed, remove its entry from `sections`.
      - Set `status` to the decision made (`keep`, `remove`, `reword`, `merge`).
 5. Remove any entries in `files` whose paths no longer exist on disk.
-6. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-7. Write the updated JSON to `.claude/context-gardner-state.json`.
+6. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+7. Write the updated JSON to `.claude/context-plane-state.json`.
 
 $ARGUMENTS

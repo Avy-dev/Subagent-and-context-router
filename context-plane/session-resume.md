@@ -53,4 +53,4 @@ If you encounter something deserving permanent storage (user preference, stable 
 - [target: CLAUDE.md] Build command: bun run build
 ```
 
-The user can run `/context-gardner checkpoint` to review and promote these items.
+The user can run `/context-plane checkpoint` to review and promote these items.

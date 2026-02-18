@@ -5,7 +5,7 @@ Autonomously review and manage memory across the project. This covers the root C
 ## Step 0a: Load state and determine filtering
 
 1. Check whether `--all` or the bare word `all` appears anywhere in `$ARGUMENTS` (but not as part of the scope keyword). If found, strip it from the arguments and set the **all-files** flag.
-2. Read `.claude/context-gardner-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
+2. Read `.claude/context-plane-state.json`. If it does not exist, contains invalid JSON, or has an unknown `version`, treat this as a first run (equivalent to `--all`). Warn the user if the file was corrupt or had an unknown version.
 3. If the state file has no `version` field or `version` is 1, treat it as needing migration — all files will be treated as changed for this run, and hashes will be computed during the state update step.
 4. Extract `last_invoked` from the state file.
 
@@ -24,7 +24,7 @@ If no scope keyword is provided, default to **all**.
 
 ## Step 1: Discover all memory files
 
-Scan the project and list every memory file found, grouped by type. Never include `.claude/context-gardner-state.json`, `context-gardner-audit.log`, `session-context.md`, or anything inside `.snapshots/` directories. (`session-context.md` is managed by the session-resume rule and checkpoint command, not by review.)
+Scan the project and list every memory file found, grouped by type. Never include `.claude/context-plane-state.json`, `context-plane-audit.log`, `session-context.md`, or anything inside `.snapshots/` directories. (`session-context.md` is managed by the session-resume rule and checkpoint command, not by review.)
 
 ```
 ## Memory Map
@@ -79,7 +79,7 @@ Do NOT update `last_invoked`. Stop here.
 
 ### Agent-router cross-reference
 
-Read `agent_router_tracking.modifications[]` from the state file (if it exists). For each modification entry, check if any `files_modified` overlap with files in the current project that are referenced by memory files in scope. If overlap is found, annotate the memory file in the Memory Map:
+Read `agent_manager_tracking.modifications[]` from the state file (if it exists). For each modification entry, check if any `files_modified` overlap with files in the current project that are referenced by memory files in scope. If overlap is found, annotate the memory file in the Memory Map:
 ```
 - ./CLAUDE.md (65 lines) [changed] [touched by: github-sync, ui-specialist]
 ```
@@ -102,7 +102,7 @@ For each section, check the state file for staleness metadata under `files.<path
 - If `last_verified` is more than 30 days old, annotate as `[unverified >30d]`.
 - These annotations prompt more aggressive re-evaluation but do **not** auto-prune. You still make the final decision.
 
-If agent-router tracking indicates source files related to this section were recently modified by agents, note this in your analysis — the memory section may no longer be accurate.
+If agent-manager tracking indicates source files related to this section were recently modified by agents, note this in your analysis — the memory section may no longer be accurate.
 
 **Autonomously decide** what to do with each section using these criteria:
 
@@ -197,16 +197,16 @@ Before applying any changes, create a snapshot of all files that will be modifie
 After applying changes, if MEMORY.md exists, count its lines:
 - If over 150 lines: append to the output:
   ```
-  MEMORY.md is at N/200 lines. Consider running /context-gardner overflow to move detailed sections to topic files.
+  MEMORY.md is at N/200 lines. Consider running /context-plane overflow to move detailed sections to topic files.
   ```
 - If over 200 lines:
   ```
-  Warning: MEMORY.md exceeds the 200-line system prompt limit. Lines after 200 are silently truncated. Run /context-gardner overflow to fix this.
+  Warning: MEMORY.md exceeds the 200-line system prompt limit. Lines after 200 are silently truncated. Run /context-plane overflow to fix this.
   ```
 
 ### Audit log
 
-After applying changes, append one JSONL entry per action to `~/.claude/projects/<project-key>/context-gardner-audit.log`:
+After applying changes, append one JSONL entry per action to `~/.claude/projects/<project-key>/context-plane-audit.log`:
 
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"review-memory","action":"prune","file":"<path>","section":"<heading>","reason":"<reason>","lines_removed":<N>}
@@ -223,7 +223,7 @@ If the log exceeds 500 lines, trim the oldest entries to bring it back to 500.
 
 After applying approved changes:
 
-1. Read `.claude/context-gardner-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
+1. Read `.claude/context-plane-state.json` (or start with `{ "version": 2, "files": {} }` if missing).
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For each file that was reviewed during this run (whether modified or not):
@@ -241,8 +241,8 @@ After applying approved changes:
      - If the section was pruned, remove its entry from `sections`.
      - Set `status` to the decision made (`keep`, `edit`, `merge`, etc.).
 5. Remove any entries in `files` whose paths no longer exist on disk.
-6. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-7. Write the updated JSON to `.claude/context-gardner-state.json`.
+6. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+7. Write the updated JSON to `.claude/context-plane-state.json`.
 
 ## Rules
 
@@ -255,7 +255,7 @@ After applying approved changes:
 - For subagent files, never remove or alter the YAML frontmatter unless it contains factual errors.
 - For rules files, never remove the `paths:` frontmatter unless it's wrong.
 - When invoked directly (not via the dispatcher), handle `--all` parsing and state updates independently.
-- Never show `.claude/context-gardner-state.json` or `context-gardner-audit.log` as memory files.
+- Never show `.claude/context-plane-state.json` or `context-plane-audit.log` as memory files.
 - Always create a snapshot before applying changes (Step 3.5).
 
 $ARGUMENTS

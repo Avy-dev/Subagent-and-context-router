@@ -36,7 +36,7 @@ When signals overlap between agents, apply these rules:
 
 ### Memory Management
 
-For memory file management tasks ("review my memory files", "clean up CLAUDE.md", "prune memory"), suggest the user run `/context-gardner` directly. Memory management is handled by a dedicated command, not a sub-agent.
+For memory file management tasks ("review my memory files", "clean up CLAUDE.md", "prune memory"), suggest the user run `/context-plane` directly. Memory management is handled by a dedicated command, not a sub-agent.
 
 ## Dispatch Protocol
 
@@ -67,26 +67,26 @@ After each agent completes, discover which files were modified:
 
 1. **Discover modified files** — Run `git diff --name-only` to detect modified tracked files, and `git ls-files --others --exclude-standard` to detect new untracked files. Combine both lists. If both are empty (e.g. because the agent committed its changes), fall back to `git diff --name-only HEAD~1` to detect files changed in the most recent commit. If not in a git repo, ask the dispatched agent to end its response with a "Files modified:" line listing every file it changed.
 2. **Skip if empty** — If no files were modified, skip tracking entirely. Do not create empty tracking entries.
-3. **Read state** — Read the project-level state file at `~/.claude/projects/<current-project-key>/context-gardner-state.json` (the same path Claude Code uses for project-scoped `.claude/` files, where the project key is the escaped directory path). If the file is missing or contains invalid JSON, start with `{}`.
-4. **Initialize if needed** — If `agent_router_tracking` does not exist in the state object, create it: `"agent_router_tracking": { "modifications": [] }`.
-5. **Append** to `agent_router_tracking.modifications[]`:
+3. **Read state** — Read the project-level state file at `~/.claude/projects/<current-project-key>/context-plane-state.json` (the same path Claude Code uses for project-scoped `.claude/` files, where the project key is the escaped directory path). If the file is missing or contains invalid JSON, start with `{}`.
+4. **Initialize if needed** — If `agent_manager_tracking` does not exist in the state object, create it: `"agent_manager_tracking": { "modifications": [] }`.
+5. **Append** to `agent_manager_tracking.modifications[]`:
    ```json
    {
      "timestamp": "<ISO 8601 UTC>",
      "agent": "<agent-name>",
      "files_modified": ["<list of files discovered in step 1>"],
-     "updated_by": "agent-router:<agent-name>"
+     "updated_by": "agent-manager:<agent-name>"
    }
    ```
 6. **Write** the updated state back.
-7. **Count check** — Count only entries in `agent_router_tracking.modifications[]` whose `timestamp` is newer than `last_run` (if `last_run` exists in the state file). If `last_run` is missing, count all entries. If the count is 10 or more, suggest:
-   `Tip: 10+ file modifications tracked since last review. Consider running /context-gardner review to tidy up.`
+7. **Count check** — Count only entries in `agent_manager_tracking.modifications[]` whose `timestamp` is newer than `last_run` (if `last_run` exists in the state file). If `last_run` is missing, count all entries. If the count is 10 or more, suggest:
+   `Tip: 10+ file modifications tracked since last review. Consider running /context-plane review to tidy up.`
 
 ### Boundaries
 
 - **Never** prune, edit, or delete memory files (MEMORY.md, CLAUDE.md, etc.) — only track state.
-- **Never** overwrite context-gardner's own fields (`last_run`, `files_reviewed`, `changes_made`, `last_invoked`).
-- Only write to the `agent_router_tracking` key in the state file.
+- **Never** overwrite context-plane's own fields (`last_run`, `files_reviewed`, `changes_made`, `last_invoked`).
+- Only write to the `agent_manager_tracking` key in the state file.
 
 ### Concurrency Note
 
@@ -116,4 +116,4 @@ This tracking protocol is not concurrency-safe. If multiple Claude Code sessions
 → Main thread — trivial single-line fix
 
 **User says:** "Review my memory files"
-→ Main thread — suggest `/context-gardner review`
+→ Main thread — suggest `/context-plane review`

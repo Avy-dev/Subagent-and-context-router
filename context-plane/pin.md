@@ -31,19 +31,19 @@ Full section:
 
 After pinning is complete and confirmed:
 
-1. Read `.claude/context-gardner-state.json`. If it does not exist or contains invalid JSON, start with `{ "version": 2, "files": {} }`.
+1. Read `.claude/context-plane-state.json`. If it does not exist or contains invalid JSON, start with `{ "version": 2, "files": {} }`.
 2. Set `version` to `2`.
 3. Set `last_invoked` to the current ISO 8601 UTC timestamp.
 4. For the file that was modified:
    - Compute the SHA-256 hash of the file's current content.
    - If the path is not in `files`, add it with `created_at` and `updated_at` both set to the current timestamp, `updated_by` set to `"pin"`, and `content_hash` set to `"sha256:<hex>"`.
    - If the path already exists, update `updated_at` to the current timestamp, `updated_by` to `"pin"`, and `content_hash` to the current hash.
-5. Do NOT modify `agent_router_tracking` — that key belongs to the agent-router.
-6. Write the updated JSON to `.claude/context-gardner-state.json` (create `.claude/` directory if needed).
+5. Do NOT modify `agent_manager_tracking` — that key belongs to the agent-manager.
+6. Write the updated JSON to `.claude/context-plane-state.json` (create `.claude/` directory if needed).
 
 ## Audit log
 
-After pinning, append one entry to `~/.claude/projects/<project-key>/context-gardner-audit.log` (JSONL format):
+After pinning, append one entry to `~/.claude/projects/<project-key>/context-plane-audit.log` (JSONL format):
 ```jsonl
 {"timestamp":"<ISO 8601 UTC>","command":"pin","action":"pin","file":"<path>","section":"<heading or line description>","reason":"User-requested pin"}
 ```
