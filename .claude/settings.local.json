@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/Skills status:*)",
+      "Bash(gh auth status:*)",
+      "Bash(git --version:*)",
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/Skills init:*)",
+      "Bash(brew install:*)",
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/RAgent/restaurant_agent remote get-url:*)",
+      "Bash(gh auth login:*)",
+      "Bash(curl:*)",
+      "Bash(git config:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/Skills push -u origin main)",
+      "Bash(git push:*)",
+      "Bash(chmod:*)",
+      "Bash(ln:*)",
+      "Bash(for cmd in context-gardner.md checkpoint.md review-memory.md prune-memory.md move-memory.md overflow.md pin.md restore.md)",
+      "Bash(do ln -sf \"/Users/prateekbhardwaj/Desktop/Skills/context-gardner/$cmd\" \"/Users/prateekbhardwaj/.claude/commands/$cmd\")",
+      "Bash(done)",
+      "Bash(git mv:*)",
+      "Bash(xargs perl:*)",
+      "Bash(for cmd in checkpoint.md review-memory.md prune-memory.md move-memory.md overflow.md pin.md restore.md)",
+      "Bash(do ln -sf \"/Users/prateekbhardwaj/Desktop/Skills/context-plane/$cmd\" \"/Users/prateekbhardwaj/.claude/commands/$cmd\")",
+      "Bash(for agent in feature-planner.md github-sync.md local-dev-runner.md)",
+      "Bash(do ln -sf \"/Users/prateekbhardwaj/Desktop/Skills/agent-manager/agents/user/$agent\" \"/Users/prateekbhardwaj/.claude/agents/$agent\")",
+      "Bash(gh repo rename:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(gh repo edit:*)",
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/Skills add:*)",
+      "Bash(git -C /Users/prateekbhardwaj/Desktop/Skills check-ignore -v .claude/settings.local.json)"
+    ]
+  }
+}
