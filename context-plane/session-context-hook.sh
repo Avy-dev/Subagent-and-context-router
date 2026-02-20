@@ -2,7 +2,18 @@
 # session-context-hook.sh — Stop hook for session-context.md reminders
 # Checks existence and freshness of session-context.md and outputs reminders.
 
-SESSION_FILE="$HOME/.claude/projects/-Users-prateekbhardwaj-Desktop-Skills/memory/session-context.md"
+# Derive project key from PWD (same escaping Claude Code uses)
+PROJECT_KEY=$(echo "$PWD" | sed 's|/|-|g')
+SESSION_FILE="$HOME/.claude/projects/${PROJECT_KEY}/memory/session-context.md"
+
+# macOS is case-insensitive; find the actual directory if exact match fails
+if [ ! -f "$SESSION_FILE" ] && [[ "$(uname)" == "Darwin" ]]; then
+    # Try case-insensitive match
+    FOUND_DIR=$(find "$HOME/.claude/projects" -maxdepth 1 -iname "${PROJECT_KEY}" -type d 2>/dev/null | head -1)
+    if [ -n "$FOUND_DIR" ]; then
+        SESSION_FILE="${FOUND_DIR}/memory/session-context.md"
+    fi
+fi
 
 if [ ! -f "$SESSION_FILE" ]; then
     echo "session-context.md missing -- create after significant work"
