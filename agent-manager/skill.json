@@ -1,0 +1,27 @@
+{
+  "name": "agent-manager",
+  "display_name": "AgentManager",
+  "description": "Automatic task dispatch to specialized sub-agents",
+  "version_file": "VERSION",
+  "depends_on": [],
+  "recommends": ["context-plane"],
+  "install": {
+    "rules": [
+      { "source": "agent-managing.md", "target": "agent-managing.md" }
+    ],
+    "commands": [
+      { "source": "agent-manager.md", "target": "agent-manager.md" }
+    ],
+    "agents": [
+      { "source": "agents/user/feature-planner.md", "target": "feature-planner.md" },
+      { "source": "agents/user/github-sync.md", "target": "github-sync.md" },
+      { "source": "agents/user/local-dev-runner.md", "target": "local-dev-runner.md" }
+    ],
+    "hooks": [],
+    "project_templates": [
+      { "source": "agents/project-templates/bug-finder-refiner.md", "target": "bug-finder-refiner.md" },
+      { "source": "agents/project-templates/ui-specialist.md", "target": "ui-specialist.md" }
+    ]
+  },
+  "post_install_message": "Run 'install.sh --init-project' in any project to add project-level agents."
+}

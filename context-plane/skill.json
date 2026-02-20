@@ -1,0 +1,32 @@
+{
+  "name": "context-plane",
+  "display_name": "ContextPlane",
+  "description": "Autonomous memory lifecycle management and session persistence",
+  "version_file": "VERSION",
+  "depends_on": [],
+  "recommends": ["agent-manager"],
+  "install": {
+    "rules": [
+      { "source": "session-resume.md", "target": "session-resume.md" }
+    ],
+    "commands": [
+      { "source": "context-plane.md", "target": "context-plane.md" },
+      { "source": "checkpoint.md", "target": "checkpoint.md" },
+      { "source": "review-memory.md", "target": "review-memory.md" },
+      { "source": "prune-memory.md", "target": "prune-memory.md" },
+      { "source": "move-memory.md", "target": "move-memory.md" },
+      { "source": "overflow.md", "target": "overflow.md" },
+      { "source": "pin.md", "target": "pin.md" },
+      { "source": "restore.md", "target": "restore.md" }
+    ],
+    "agents": [],
+    "hooks": [
+      {
+        "event": "Stop",
+        "source": "session-context-hook.sh",
+        "type": "command"
+      }
+    ],
+    "project_templates": []
+  }
+}

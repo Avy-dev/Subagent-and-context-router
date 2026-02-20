@@ -1,0 +1,12 @@
+{
+  "repository": "claude-code-skills",
+  "manifest_version": 1,
+  "skills": [
+    "agent-manager",
+    "context-plane"
+  ],
+  "default_install": [
+    "agent-manager",
+    "context-plane"
+  ]
+}
